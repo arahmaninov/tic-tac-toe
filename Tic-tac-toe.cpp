@@ -214,7 +214,7 @@ public:
     {
         if(hasPlayerWon)
         {
-            std::cout << "\nCongratulations! You won!\nWant to play again? ";
+            std::cout << "\nCongratulations! You won!\n\nWant to play again? (y/n) ";
             std::string choice;
             std::cin >> choice;
             if(choice == "y" || choice == "Y")
@@ -226,7 +226,7 @@ public:
         }
         else if(hasBotWon)
         {
-            std::cout << "\nUnfortunately you lost :\(\nWant to play again? ";
+            std::cout << "\nUnfortunately you lost :\(\n\nWant to play again? (y/n) ";
             std::string choice;
             std::cin >> choice;
             if(choice == "y" || choice == "Y")
@@ -238,7 +238,7 @@ public:
         }
         else if(isDraw)
         {
-            std::cout << "\nIt's a draw.\nWant to play again? ";
+            std::cout << "\nIt's a draw.\n\nWant to play again? (y/n) ";
             std::string choice;
             std::cin >> choice;
             if(choice == "y" || choice == "Y")
@@ -274,11 +274,20 @@ public:
     }
 };
 
+void printTitle();
 
 int main()
 {
+    printTitle();
     Game game;
     game.play();
 
     return 0;
+}
+
+void printTitle()
+{
+    std::cout << "\t===========================\n";
+    std::cout << "\t=\tTIC-TAC-TOE\t  =\n";
+    std::cout << "\t===========================\n\n\n";
 }
