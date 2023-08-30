@@ -3,18 +3,33 @@
 #include <cstdlib>
 #include <ctime>
 
+
+/**
+ * @mainpage Tic-tac-toe documentation
+ * 
+ * This is a test documentation for a simple tic-tac-toe game.
+ * Documentation was made with Doxygen.
+ */
+
+
 enum {
     EMPTY,
     PLAYER,
     BOT
 };
 
+/**
+ * Game board made of array
+ */
 class Board{
 public:
     int cells[9] = {EMPTY, EMPTY, EMPTY,
                     EMPTY, EMPTY, EMPTY,
                     EMPTY, EMPTY, EMPTY};
-
+	
+	/**
+	 * Fill the board with empty values after restarting the game
+	 */
     void clearBoard()
     {
         for(int i = 0; i < 9; i++)
@@ -22,6 +37,9 @@ public:
     }
 };
 
+/**
+ * Main class that controlls the game's loop
+ */
 class Game{
 public:
     Board board;
@@ -30,7 +48,10 @@ public:
     bool hasBotWon = false;
     bool isDraw = false;
     bool isGameRunning = true;
-
+	
+	/**
+	 * Show the current board to a player
+	 */
     void printBoard()
     {
         for(int i = 0; i < 9; i++)
@@ -48,7 +69,10 @@ public:
         }
         std::cout << std::endl;
     }
-
+	
+	/**
+	 * Read user input and check if it's a number from 1 to 9
+	 */
     void takePlayerInput()
     {
         std::string playerChoice;
@@ -71,7 +95,10 @@ public:
 
         }while(!isChoiceLegit);
     }
-
+	
+	/**
+	 * AI action for turns 1 and 2
+	 */
     void botTurn()
     {
         if(turn == 1 && isGameRunning)
@@ -138,7 +165,10 @@ public:
             turn++;
         }
     }
-
+	
+	/**
+	 * AI action for turns > 2
+	 */
     void botRandomTurn()
     {
         int free_cells[9];
@@ -157,7 +187,10 @@ public:
 
         board.cells[result] = BOT;
     }
-
+	
+	/**
+	 * Check if player won, lost or it's a draw
+	 */
     void checkWinCondition()
     {
 
@@ -184,7 +217,10 @@ public:
         else if(checkForDraw())
             isDraw = true, isGameRunning = false;
     }
-
+	
+	/**
+	 * Checking draw condition
+	 */
     bool checkForDraw()
     {
         for(int i = 0; i < 9; i++)
@@ -193,7 +229,10 @@ public:
 
         return true;
     }
-
+	
+	/**
+	 * Main game loop
+	 */
     void play()
     {
         srand((unsigned)time(NULL));
@@ -209,7 +248,10 @@ public:
         }
         printResult();
     }
-
+	
+	/**
+	 * Show message after player's win, loss or draw
+	 */
     void printResult()
     {
         if(hasPlayerWon)
@@ -250,7 +292,10 @@ public:
         }
 
     }
-
+	
+	/**
+	 * Restarting game
+	 */
     void restartGame()
     {
         board.clearBoard();
@@ -261,7 +306,10 @@ public:
         isGameRunning = true;
         play();
     }
-
+	
+	/**
+	 * Check if player input is a digit
+	 */
     bool isInputValid(std::string input)
     {
         for(const auto& c : input)
@@ -274,6 +322,9 @@ public:
     }
 };
 
+/**
+ * Print title of the game
+ */
 void printTitle();
 
 int main()
