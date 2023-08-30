@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 
 enum {
     EMPTY,
@@ -23,8 +25,10 @@ public:
 class Game{
 public:
     Board board;
+    int turn = 1;
     bool hasPlayerWon = false;
     bool hasBotWon = false;
+    bool isDraw = false;
     bool isGameRunning = true;
 
     void printBoard()
@@ -68,8 +72,95 @@ public:
         }while(!isChoiceLegit);
     }
 
+    void botTurn()
+    {
+        if(turn == 1 && isGameRunning)
+        {
+            if(board.cells[4] == EMPTY)
+            {
+                board.cells[4] = BOT;
+            }
+            else if(board.cells[0] == EMPTY)
+            {
+                board.cells[0] = BOT;
+            }
+        }
+        else if(turn == 2 && isGameRunning)
+        {
+            if(board.cells[4] == BOT)
+            {
+                if(board.cells[0] == PLAYER && board.cells[1] == PLAYER)
+                    board.cells[2] = BOT;
+                else if(board.cells[1] == PLAYER && board.cells[2] == PLAYER)
+                    board.cells[0] = BOT;
+                else if(board.cells[0] == PLAYER && board.cells[2] == PLAYER)
+                    board.cells[1] = BOT;
+                else if(board.cells[0] == PLAYER && board.cells[3] == PLAYER)
+                    board.cells[6] = BOT;
+                else if(board.cells[3] == PLAYER && board.cells[6] == PLAYER)
+                    board.cells[0] = BOT;
+                else if(board.cells[2] == PLAYER && board.cells[5] == PLAYER)
+                    board.cells[8] = BOT;
+                else if(board.cells[5] == PLAYER && board.cells[8] == PLAYER)
+                    board.cells[2] = BOT;
+                else if(board.cells[6] == PLAYER && board.cells[7] == PLAYER)
+                    board.cells[8] = BOT;
+                else if(board.cells[7] == PLAYER && board.cells[8] == PLAYER)
+                    board.cells[6] = BOT;
+                else
+                    botRandomTurn();
+            }
+            if(board.cells[0] == BOT)
+            {
+                if(board.cells[1] == PLAYER && board.cells[4] == PLAYER)
+                    board.cells[7] = BOT;
+                else if(board.cells[2] == PLAYER && board.cells[4] == PLAYER)
+                    board.cells[6] = BOT;
+                else if(board.cells[3] == PLAYER && board.cells[4] == PLAYER)
+                    board.cells[5] = BOT;
+                else if(board.cells[5] == PLAYER && board.cells[4] == PLAYER)
+                    board.cells[3] = BOT;
+                else if(board.cells[6] == PLAYER && board.cells[4] == PLAYER)
+                    board.cells[2] = BOT;
+                else if(board.cells[7] == PLAYER && board.cells[4] == PLAYER)
+                    board.cells[1] = BOT;
+                else
+                    botRandomTurn();
+            }
+        }
+        else if(turn > 2 && isGameRunning)
+            botRandomTurn();
+
+        if(isGameRunning)
+        {
+            std::cout << "\nComputer turn:\n";
+            printBoard();
+            turn++;
+        }
+    }
+
+    void botRandomTurn()
+    {
+        int free_cells[9];
+        int counter = 0;
+        for(int i = 0; i < 9; i++)
+        {
+            if(board.cells[i] == EMPTY)
+            {
+                free_cells[counter] = i;
+                counter++;
+            }
+        }
+
+        int random = rand() % counter;
+        int result = free_cells[random];
+
+        board.cells[result] = BOT;
+    }
+
     void checkWinCondition()
     {
+
         if((board.cells[0] == PLAYER && board.cells[1] == PLAYER && board.cells[2] == PLAYER) || // 1st row
            (board.cells[3] == PLAYER && board.cells[4] == PLAYER && board.cells[5] == PLAYER) || // 2nd row
            (board.cells[6] == PLAYER && board.cells[7] == PLAYER && board.cells[8] == PLAYER) || // 3d row
@@ -90,14 +181,30 @@ public:
            (board.cells[2] == BOT && board.cells[4] == BOT && board.cells[6] == BOT)    // 2nd diagonal
            )
             hasBotWon = true, isGameRunning = false;
+        else if(checkForDraw())
+            isDraw = true, isGameRunning = false;
+    }
+
+    bool checkForDraw()
+    {
+        for(int i = 0; i < 9; i++)
+            if(board.cells[i] == EMPTY)
+                return false;
+
+        return true;
     }
 
     void play()
     {
+        srand((unsigned)time(NULL));
+
+        printBoard();
         while(isGameRunning)
         {
-            printBoard();
             takePlayerInput();
+            printBoard();
+            checkWinCondition();
+            botTurn();
             checkWinCondition();
         }
         printResult();
@@ -112,10 +219,7 @@ public:
             std::cin >> choice;
             if(choice == "y" || choice == "Y")
             {
-                board.clearBoard();
-                hasPlayerWon = false;
-                isGameRunning = true;
-                play();
+                restartGame();
             }
             else
                 return;
@@ -127,15 +231,35 @@ public:
             std::cin >> choice;
             if(choice == "y" || choice == "Y")
             {
-                board.clearBoard();
-                hasBotWon = false;
-                isGameRunning = true;
-                play();
+                restartGame();
+            }
+            else
+                return;
+        }
+        else if(isDraw)
+        {
+            std::cout << "\nIt's a draw.\nWant to play again? ";
+            std::string choice;
+            std::cin >> choice;
+            if(choice == "y" || choice == "Y")
+            {
+                restartGame();
             }
             else
                 return;
         }
 
+    }
+
+    void restartGame()
+    {
+        board.clearBoard();
+        hasPlayerWon = false;
+        hasBotWon = false;
+        isDraw = false;
+        turn = 1;
+        isGameRunning = true;
+        play();
     }
 
     bool isInputValid(std::string input)
@@ -151,13 +275,10 @@ public:
 };
 
 
-
 int main()
 {
     Game game;
     game.play();
 
-
     return 0;
 }
-
